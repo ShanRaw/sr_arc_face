@@ -6,6 +6,10 @@ import 'enum/face_detect_orient_priority_enum.dart';
 import 'model/active_file_info_model.dart';
 import 'model/version_info_model.dart';
 
+export 'enum/face_detect_orient_priority_enum.dart';
+export 'model/active_file_info_model.dart';
+export 'model/version_info_model.dart';
+
 class SrArcFace {
   static const MethodChannel _channel = const MethodChannel('sr_arc_face');
 
@@ -22,8 +26,10 @@ class SrArcFace {
 
   ///TODO: 获取sdk版本
   static Future<VersionInfoModel> getSdkVersion() async {
-    var result = await _channel.invokeMethod('getSdkVersion');
-    VersionInfoModel versionInfo = VersionInfoModel.fromJson(result);
+    String result = await _channel.invokeMethod('getSdkVersion');
+    final resArr = result.split(',');
+    VersionInfoModel versionInfo = VersionInfoModel.fromJson(
+        {'version': resArr[0], 'buildDate': resArr[1], 'copyRight': resArr[2]});
     return versionInfo;
   }
 
@@ -53,11 +59,18 @@ class SrArcFace {
 
   ///TODO:获取激活文件
   static Future<ActiveFileInfoModel> getActiveFileInfo() async {
-    var result = await _channel.invokeMethod('getActiveFileInfo');
-    ActiveFileInfoModel activeFileInfo = ActiveFileInfoModel.fromJson(result);
+    String result = await _channel.invokeMethod('getActiveFileInfo');
+    final resArr = result.split(',');
+    ActiveFileInfoModel activeFileInfo = ActiveFileInfoModel.fromJson({
+      "appId": resArr[0],
+      "sdkKey": resArr[1],
+      "platform": resArr[2],
+      "sdkType": resArr[3],
+      "sdkVersion": resArr[4],
+      "fileVersion": resArr[5],
+      "startTime": resArr[6],
+      "endTime": resArr[7],
+    });
     return activeFileInfo;
   }
-
-  ///TODO:注册人脸
-  static Future register() async {}
 }

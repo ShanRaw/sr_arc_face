@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:sr_arc_face/arcFace_camera_view.dart';
 import 'package:sr_arc_face/sr_arc_face.dart';
 
@@ -40,9 +38,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   init() async {
     try {
-      bool result = await SrArcFace.activeOnLine(
-          '2W9JdxoPRmcifCpaG6CJQ21fTysE9fBhjfZmZZcac3D2',
-          '6RPKdbgAyQaaPtBypfd3Q1xtRDaXrpVJKFnzu38zE4ct');
+      bool result = await SrArcFace.activeOnLine('', '', rootPath: '');
       print(result);
       if (result)
         setState(() {
@@ -51,6 +47,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     } catch (e) {
       print(e);
     }
+
+    ///获取激活文件信息
+    final activeInfo = await SrArcFace.getActiveFileInfo();
+    print(activeInfo.toJson());
+
+    ///获取版本信息
+    final versionInfo = await SrArcFace.getSdkVersion();
+    print(versionInfo.toJson());
+    //设置视频检测角度
+    SrArcFace.setFaceDetectDegree(FaceDetectOrientPriorityEnum.ASF_OP_ALL_OUT);
   }
 
   @override
@@ -72,7 +78,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         showRectView: true,
                         similarity: 0.75,
                         livingDetect: true,
-                        multiplayerSearch: true,
+                        maxDetectNum: 10,
                         onCreated: onCreated,
                       )
                     : Container(),

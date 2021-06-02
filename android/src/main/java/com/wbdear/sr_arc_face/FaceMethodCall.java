@@ -67,7 +67,7 @@ public class FaceMethodCall {
         int code = FaceEngine.getActiveFileInfo(activity, activeFileInfo);
         if (code == ErrorInfo.MOK) {
             Log.i(TAG, "获取激活文件信息：" + activeFileInfo.toString());
-            result.success(activeFileInfo);
+            result.success(activeFileInfo.toString());
         } else {
             Log.e(TAG, "GetActiveFileInfo failed, code is  : " + code);
             result.error("" + code, "获取激活文件信息失败，错误码：" + code + "请根据错误码查询对应错误", null);
@@ -84,7 +84,8 @@ public class FaceMethodCall {
         int code = FaceEngine.getVersion(versionInfo);
         if (code == ErrorInfo.MOK) {
             Log.i(TAG, "获取版本信息：" + versionInfo.toString());
-            result.success(versionInfo);
+            Object data = new Object();
+            result.success(versionInfo.getVersion() + ',' + versionInfo.getBuildDate() + ',' + versionInfo.getCopyRight());
         } else {
             Log.e(TAG, "GetSdkVersion failed, code is  : " + code);
             result.error("" + code, "获取sdk版本信息，错误码：" + code + "请根据错误码查询对应错误", null);

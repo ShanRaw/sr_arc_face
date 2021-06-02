@@ -1,16 +1,108 @@
-# sr_arc_face_example
+```dart
+import 'package:flutter/material.dart';
 
-Demonstrates how to use the sr_arc_face plugin.
+import 'package:sr_arc_face/arcFace_camera_view.dart';
+import 'package:sr_arc_face/sr_arc_face.dart';
 
-## Getting Started
+void main() {
+  runApp(MyApp());
+}
 
-This project is a starting point for a Flutter application.
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-A few resources to get you started if this is your first Flutter project:
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  ArcFaceController arcFaceController = ArcFaceController();
+  bool isActive = false;
+  String userName = '';
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      init();
+    });
+  }
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  onCreated() {
+    arcFaceController.faceDetectStreamListen((data) {
+      print('------------res------------');
+      print(data);
+      print('------------res------------');
+      setState(() {
+        userName = data;
+      });
+    });
+  }
+
+  init() async {
+    try {
+      bool result = await SrArcFace.activeOnLine('', '', rootPath: '');
+      print(result);
+      if (result)
+        setState(() {
+          isActive = result;
+        });
+    } catch (e) {
+      print(e);
+    }
+
+    ///获取激活文件信息
+    final activeInfo = await SrArcFace.getActiveFileInfo();
+    print(activeInfo.toJson());
+
+    ///获取版本信息
+    final versionInfo = await SrArcFace.getSdkVersion();
+    print(versionInfo.toJson());
+    //设置视频检测角度
+    SrArcFace.setFaceDetectDegree(FaceDetectOrientPriorityEnum.ASF_OP_ALL_OUT);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: 500,
+                height: 500,
+                child: isActive
+                    ? ArcFaceCameraView(
+                        controller: arcFaceController,
+                        showRectView: true,
+                        similarity: 0.75,
+                        livingDetect: true,
+                        maxDetectNum: 10,
+                        onCreated: onCreated,
+                      )
+                    : Container(),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (!arcFaceController.isCreate) {
+                    return print('未创建');
+                  }
+                  //root 默认为getExternalStorageDirectory
+                  print('请把人脸图片.jpg放入传入的 rootPath + "/registed/images/" 文件夹中');
+                  print('默认为 rootPath +"/arcFace/registed/images/"');
+                  arcFaceController.register();
+                },
+                child: Text('注册人脸'),
+              ),
+              Text(userName)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```

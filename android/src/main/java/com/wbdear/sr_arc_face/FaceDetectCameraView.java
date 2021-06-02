@@ -152,7 +152,7 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
     private ConcurrentHashMap<Integer, Integer> livenessErrorRetryMap = new ConcurrentHashMap<>();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
     private FaceHelper faceHelper;
-    private static final int MAX_DETECT_NUM = 10;
+    private static int MAX_DETECT_NUM = 10;
     /**
      * 识别阈值
      */
@@ -175,7 +175,6 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
     /**
      * 搜索到第一个人时候是否搜索
      */
-    private boolean multiplayerSearch = false;
 
     private ExecutorService executorService;
     private static final String REGISTER_FAILED_DIR = Constants.ROOT_PATH + File.separator + "failed";
@@ -260,7 +259,7 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
                 double similar_threshold = (double) call.argument("similarity");
                 SIMILAR_THRESHOLD = (float) similar_threshold;
                 livenessDetect = (Boolean) call.argument("livingDetect");
-                multiplayerSearch = (Boolean) call.argument("multiplayerSearch");
+                MAX_DETECT_NUM = (int) call.argument("maxDetectNum");
                 break;
             case "initEngine":
                 initEngine();
@@ -765,31 +764,29 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
                         Log.e(TAG, "onNext: 对比结果" + (compareResult.getSimilar() > SIMILAR_THRESHOLD));
                         Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
-                            if (multiplayerSearch) {
-                                boolean isAdded = false;
-                                if (compareResultList == null) {
-                                    requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                                    faceHelper.setName(requestId, "VISITOR " + requestId);
-                                    return;
-                                }
-                                for (CompareResult compareResult1 : compareResultList) {
-                                    if (compareResult1.getTrackId() == requestId) {
-                                        isAdded = true;
-                                        break;
-                                    }
-                                }
-                                if (!isAdded) {
-                                    //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
-                                    if (compareResultList.size() >= MAX_DETECT_NUM) {
-                                        compareResultList.remove(0);
-                                    }
-                                    //添加显示人员时，保存其trackId
-                                    compareResult.setTrackId(requestId);
-                                    compareResultList.add(compareResult);
-                                }
-                                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
-                                faceHelper.setName(requestId, "success");
+                            boolean isAdded = false;
+                            if (compareResultList == null) {
+                                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                                faceHelper.setName(requestId, "VISITOR " + requestId);
+                                return;
                             }
+                            for (CompareResult compareResult1 : compareResultList) {
+                                if (compareResult1.getTrackId() == requestId) {
+                                    isAdded = true;
+                                    break;
+                                }
+                            }
+                            if (!isAdded) {
+                                //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
+                                if (compareResultList.size() >= MAX_DETECT_NUM) {
+                                    compareResultList.remove(0);
+                                }
+                                //添加显示人员时，保存其trackId
+                                compareResult.setTrackId(requestId);
+                                compareResultList.add(compareResult);
+                            }
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
+                            faceHelper.setName(requestId, "success");
 
                             Log.e(TAG, "onNext: 搜索结果 " + compareResult.getUserName());
                             streamHandlerImpl.eventSinkSuccess(compareResult.getUserName());

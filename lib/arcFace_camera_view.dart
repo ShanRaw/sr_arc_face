@@ -5,29 +5,30 @@ import 'package:flutter/services.dart';
 ///[showRectView]是否显示人脸框 默认为true;
 ///[similarity] 相似度默认0.75
 ///[livingDetect] 是否进行活体检测 默认为false
-///[multiplayerSearch] 是否多人检测
+///[maxDetectNum] 是否多人检测
 ///[onCreated] 创建完成回调
 class ArcFaceCameraView extends StatelessWidget {
   final ArcFaceController controller;
   final bool? showRectView;
   final double? similarity;
   final bool? livingDetect;
-  final bool? multiplayerSearch;
+  final int? maxDetectNum;
   final Function onCreated;
 
-  ArcFaceCameraView({required this.controller,
-    this.showRectView,
-    this.similarity,
-    this.livingDetect,
-    this.multiplayerSearch,
-    required this.onCreated});
+  ArcFaceCameraView(
+      {required this.controller,
+      this.showRectView,
+      this.similarity,
+      this.livingDetect,
+      this.maxDetectNum,
+      required this.onCreated});
 
   onPlatformViewCreated(int id) {
     controller.init(id,
         showRectView: showRectView,
         similarity: similarity,
         livingDetect: livingDetect,
-        multiplayerSearch: multiplayerSearch,
+        maxDetectNum: maxDetectNum,
         callback: onCreated);
     controller.isCreate = true;
   }
@@ -71,17 +72,17 @@ class ArcFaceController {
 
   init(int id,
       {bool? showRectView,
-        double? similarity,
-        bool? livingDetect,
-        bool? multiplayerSearch,
-        Function? callback}) {
+      double? similarity,
+      bool? livingDetect,
+      int? maxDetectNum,
+      Function? callback}) {
     _methodChannel = MethodChannel("face_detect_camera_view_method_$id");
 
     _methodChannel.invokeMethod("loadCameraView", {
       'showRectView': showRectView ?? true,
       'similarity': similarity ?? 0.75,
       'livingDetect': livingDetect ?? false,
-      'multiplayerSearch': multiplayerSearch ?? true,
+      'maxDetectNum': maxDetectNum ?? 10,
     });
 
     ///
