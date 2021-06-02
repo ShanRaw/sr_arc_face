@@ -230,11 +230,11 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
 
     @Override
     public void dispose() {
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
         }
-
         unInitEngine();
         if (faceHelper != null) {
             ConfigUtil.setTrackedFaceCount(activity, faceHelper.getTrackedFaceCount());
@@ -247,7 +247,6 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
         if (delayFaceTaskCompositeDisposable != null) {
             delayFaceTaskCompositeDisposable.clear();
         }
-
         FaceServer.getInstance().unInit();
     }
 
