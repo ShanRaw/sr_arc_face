@@ -16,7 +16,7 @@ class SrArcFace {
   ///TODO: 激活引擎
   ///[appId] appId
   ///[sdkKey] sdkKey
-  ///[rootPath] rootPath 人脸识别根目录 特征码存放在 rootPath+"/registed/features/" images 存放在rootPath+"/registed/images/"
+  ///[rootPath]  rootPath 默认为 getExternalStorageDirectory+/arcFace 人脸识别根目录 特征码存放在 rootPath+"/registed/features/" images 存放在rootPath+"/registed/images/"
   static Future<bool> activeOnLine(String appId, String sdkKey,
       {String? rootPath}) async {
     final bool result = await _channel.invokeMethod('activeOnLine',

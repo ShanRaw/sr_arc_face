@@ -60,9 +60,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   init() async {
     try {
       bool result = await SrArcFace.activeOnLine(
-          '2W9JdxoPRmcifCpaG6CJQ21fTysE9fBhjfZmZZcac3D2',
-          '6RPKdbgAyQaaPtBypfd3Q1xtRDaXrpVJKFnzu38zE4ct',
-          rootPath: '');
+          '',//APP_ID
+          '',//SDK_KEY
+          rootPath: ''//可不传默认为 getExternalStorageDirectory+/arcFace
+);
       print(result);
       if (result)
         setState(() {

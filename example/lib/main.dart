@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   if (!arcFaceController.isCreate) {
                     return print('未创建');
                   }
-                  //root 默认为getExternalStorageDirectory
+                  //root 默认为getExternalStorageDirectory + /arcFace
                   print('请把人脸图片.jpg放入传入的 rootPath + "/registed/images/" 文件夹中');
                   print('默认为 rootPath +"/arcFace/registed/images/"');
                   arcFaceController.register();
