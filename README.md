@@ -3,7 +3,7 @@
 
 > 使用的时候请及时替换sdk免费版本一年会自动过期
 
-> [虹软官网]: https://ai.arcsoft.com.cn/
+> [虹软官网](https://ai.arcsoft.com.cn/)
 
 ### 配置pubspec.yaml
 ```yaml
