@@ -361,6 +361,7 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
                         } else {
                             msg = "ExtractCode:" + errorCode;
                         }
+
                         faceHelper.setName(requestId, msg);
                         // 在尝试最大次数后，特征提取仍然失败，则认为识别未通过
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -766,7 +767,9 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                                faceHelper.setName(requestId, "VISITOR " + requestId);
+                                if (faceHelper != null) {
+                                    faceHelper.setName(requestId, "VISITOR " + requestId);
+                                }
                                 return;
                             }
                             for (CompareResult compareResult1 : compareResultList) {
@@ -785,20 +788,26 @@ public class FaceDetectCameraView implements PlatformView, MethodCallHandler, On
                                 compareResultList.add(compareResult);
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
-                            faceHelper.setName(requestId, "success");
+                            if (faceHelper != null) {
+                                faceHelper.setName(requestId, "success");
+                            }
 
                             Log.e(TAG, "onNext: 搜索结果 " + compareResult.getUserName());
                             streamHandlerImpl.eventSinkSuccess(compareResult.getUserName());
 
                         } else {
-                            faceHelper.setName(requestId, "not_registered");
+                            if (faceHelper != null) {
+                                faceHelper.setName(requestId, "not_registered");
+                            }
                             retryRecognizeDelayed(requestId);
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        faceHelper.setName(requestId, "not_registered");
+                        if (faceHelper != null) {
+                            faceHelper.setName(requestId, "not_registered");
+                        }
                         retryRecognizeDelayed(requestId);
                     }
 
