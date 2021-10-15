@@ -8,7 +8,7 @@
 ### 配置pubspec.yaml
 ```yaml
 dependencies:
-  sr_arc_face: https://github.com/UseZwb/sr_arc_face.git
+  sr_arc_face: xxx
 ```
 
 
